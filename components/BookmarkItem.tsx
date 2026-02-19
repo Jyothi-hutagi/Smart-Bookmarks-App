@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 type Bookmark = {
   id: string;
@@ -61,13 +62,16 @@ export default function BookmarkItem({ bookmark, onDelete }: Props) {
       {/* Favicon */}
       <div className="w-9 h-9 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
         {favicon ? (
-          <img
+          <Image
             src={favicon}
             alt=""
+            width={20}
+            height={20}
             className="w-5 h-5"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
             }}
+            unoptimized
           />
         ) : (
           <svg

@@ -12,7 +12,7 @@ export default function BookmarkForm({ onAdd }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -37,8 +37,9 @@ export default function BookmarkForm({ onAdd }: Props) {
       await onAdd(title.trim(), normalizedUrl);
       setTitle("");
       setUrl("");
-    } catch (err: any) {
-      setError(err.message || "Failed to add bookmark");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to add bookmark";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
