@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { createBrowserClient } from "@/lib/supabase/client";
 import BookmarkForm from "./BookmarkForm";
 import BookmarkItem from "./BookmarkItem";
@@ -151,10 +152,13 @@ export default function BookmarkDashboard({ initialBookmarks, user }: Props) {
 
           <div className="flex items-center gap-3">
             {user.avatar && (
-              <img
+              <Image
                 src={user.avatar}
                 alt={user.name}
+                width={32}
+                height={32}
                 className="w-8 h-8 rounded-full border-2 border-indigo-200"
+                unoptimized
               />
             )}
             <div className="hidden sm:block text-right">

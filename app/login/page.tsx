@@ -3,6 +3,8 @@
 import { createBrowserClient } from "@/lib/supabase/client";
 import { useState } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const supabase = createBrowserClient();
