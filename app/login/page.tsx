@@ -1,23 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export default function LoginPage() {
+  const [supabase, setSupabase] = useState<any>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    // Initialize Supabase client only on client side
+    const initSupabase = async () => {
+      const { createBrowserClient } = await import("@supabase/ssr");
+      const client = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      setSupabase(client);
+    };
+    initSupabase();
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!supabase) return;
     setLoading(true);
     setError(null);
 
@@ -40,6 +49,7 @@ export default function LoginPage() {
   };
 
   const handleSignUp = async () => {
+    if (!supabase) return;
     setLoading(true);
     setError(null);
 
@@ -107,7 +117,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !supabase}
             className="w-full px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
@@ -117,7 +127,7 @@ export default function LoginPage() {
         <div className="mt-4">
           <button
             onClick={handleSignUp}
-            disabled={loading}
+            disabled={loading || !supabase}
             className="w-full px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
           >
             {loading ? "Creating account..." : "Create New Account"}
