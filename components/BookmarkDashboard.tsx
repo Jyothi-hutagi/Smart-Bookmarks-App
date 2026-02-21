@@ -29,12 +29,16 @@ type Props = {
 export default function BookmarkDashboard({ initialBookmarks, user }: Props) {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks);
   const [isOnline, setIsOnline] = useState(true);
-  const supabase = createBrowserClient();
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const [supabase, setSupabase] = useState<any>(null);
+  const channelRef = useRef<any>(null);
 
   useEffect(() => {
-    // Real-time subscription
-    const channel = supabase
+    // Initialize Supabase client on client side only
+    const client = createBrowserClient();
+    setSupabase(client);
+
+    // Setup real-time subscription
+    const channel = client
       .channel("bookmarks-realtime")
       .on(
         "postgres_changes",
@@ -71,11 +75,12 @@ export default function BookmarkDashboard({ initialBookmarks, user }: Props) {
     channelRef.current = channel;
 
     return () => {
-      supabase.removeChannel(channel);
+      client.removeChannel(channel);
     };
-  }, [user.id, supabase]);
+  }, [user.id]);
 
   const handleAdd = async (title: string, url: string) => {
+    if (!supabase) throw new Error("Supabase not initialized");
     const { data, error } = await supabase
       .from("bookmarks")
       .insert({ title, url, user_id: user.id })
@@ -93,6 +98,7 @@ export default function BookmarkDashboard({ initialBookmarks, user }: Props) {
   };
 
   const handleDelete = async (id: string) => {
+    if (!supabase) throw new Error("Supabase not initialized");
     // Optimistic update
     setBookmarks((prev) => prev.filter((b) => b.id !== id));
 
