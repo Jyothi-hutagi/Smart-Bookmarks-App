@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const [supabase, setSupabase] = useState<any>(null);
   const [email, setEmail] = useState("");
